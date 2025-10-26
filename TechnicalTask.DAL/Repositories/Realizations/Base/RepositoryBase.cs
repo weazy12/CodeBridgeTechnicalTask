@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using TechnicalTask.DAL.Data;
 using TechnicalTask.DAL.Repositories.Interfaces.Base;
+using TechnicalTask.DAL.Repositories.QueryOptions;
 
 namespace TechnicalTask.DAL.Repositories.Realizations.Base
 {
@@ -21,144 +22,94 @@ namespace TechnicalTask.DAL.Repositories.Realizations.Base
             _dbContext = context;
         }
 
-        public IQueryable<T> FindAll(Expression<Func<T, bool>>? predicate = default)
-        {
-            return GetQueryable(predicate).AsNoTracking();
-        }
-
-        public T Create(T entity)
-        {
-            return _dbContext.Set<T>().Add(entity).Entity;
-        }
-
         public async Task<T> CreateAsync(T entity)
         {
             var tmp = await _dbContext.Set<T>().AddAsync(entity);
             return tmp.Entity;
         }
-
-        public Task CreateRangeAsync(IEnumerable<T> items)
+        public async Task<T?> GetFirstOrDefaultAsync(QueryOptions<T>? queryOptions = null)
         {
-            return _dbContext.Set<T>().AddRangeAsync(items);
-        }
+            IQueryable<T> query = _dbContext.Set<T>();
 
-        public EntityEntry<T> Update(T entity)
-        {
-            return _dbContext.Set<T>().Update(entity);
-        }
-
-        public void UpdateRange(IEnumerable<T> items)
-        {
-            _dbContext.Set<T>().UpdateRange(items);
-        }
-
-        public void Delete(T entity)
-        {
-            _dbContext.Set<T>().Remove(entity);
-        }
-
-        public void DeleteRange(IEnumerable<T> items)
-        {
-            _dbContext.Set<T>().RemoveRange(items);
-        }
-
-        public void Attach(T entity)
-        {
-            _dbContext.Set<T>().Attach(entity);
-        }
-
-        public EntityEntry<T> Entry(T entity)
-        {
-            return _dbContext.Entry(entity);
-        }
-
-        public void Detach(T entity)
-        {
-            _dbContext.Entry(entity).State = EntityState.Detached;
-        }
-
-        public Task ExecuteSqlRaw(string query)
-        {
-            return _dbContext.Database.ExecuteSqlRawAsync(query);
-        }
-
-        public IQueryable<T> Include(params Expression<Func<T, object>>[] includes)
-        {
-            IIncludableQueryable<T, object>? query = default;
-
-            if (includes.Any())
+            if (queryOptions != null)
             {
-                query = _dbContext.Set<T>().Include(includes[0]);
+                query = ApplyTracking(query, queryOptions.AsNoTracking);
+                query = ApplyInclude(query, queryOptions.Include);
+                query = ApplyFilter(query, queryOptions.Filter);
             }
 
-            for (int queryIndex = 1; queryIndex < includes.Length; ++queryIndex)
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(QueryOptions<T>? queryOptions = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>();
+
+            if (queryOptions != null)
             {
-                query = query!.Include(includes[queryIndex]);
+                query = ApplyQueryOptions(query, queryOptions);
             }
 
-            return (query is null) ? _dbContext.Set<T>() : query.AsQueryable();
+            return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(
-            Expression<Func<T, bool>>? predicate = default,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
+        private static IQueryable<T> ApplyFilter(IQueryable<T> query, Expression<Func<T, bool>>? filter)
         {
-            return await GetQueryable(predicate, include).ToListAsync();
+            return filter is not null ? query.Where(filter) : query;
         }
 
-        public async Task<IEnumerable<T>?> GetAllAsync(
-            Expression<Func<T, T>> selector,
-            Expression<Func<T, bool>>? predicate = default,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
+        private static IQueryable<T> ApplyInclude(IQueryable<T> query, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include)
         {
-            return await GetQueryable(predicate, include, selector).ToListAsync() ?? new List<T>();
+            return include is not null ? include(query) : query;
         }
 
-        public async Task<T?> GetSingleOrDefaultAsync(
-            Expression<Func<T, bool>>? predicate = default,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
+        private static IQueryable<T> ApplyOrdering(
+            IQueryable<T> query,
+            Expression<Func<T, object>>? orderByASC,
+            Expression<Func<T, object>>? orderByDESC)
         {
-            return await GetQueryable(predicate, include).SingleOrDefaultAsync();
-        }
-
-        public async Task<T?> GetFirstOrDefaultAsync(
-            Expression<Func<T, bool>>? predicate = default,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
-        {
-            return await GetQueryable(predicate, include).FirstOrDefaultAsync();
-        }
-
-        public async Task<T?> GetFirstOrDefaultAsync(
-            Expression<Func<T, T>> selector,
-            Expression<Func<T, bool>>? predicate = default,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default)
-        {
-            return await GetQueryable(predicate, include, selector).FirstOrDefaultAsync();
-        }
-
-        private IQueryable<T> GetQueryable(
-            Expression<Func<T, bool>>? predicate = default,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default,
-            Expression<Func<T, T>>? selector = default)
-        {
-            var query = _dbContext.Set<T>().AsNoTracking();
-
-            if (include is not null)
+            if (orderByASC != null)
             {
-                query = include(query);
+                return query.OrderBy(orderByASC);
             }
 
-            if (predicate is not null)
+            if (orderByDESC != null)
             {
-                query = query.Where(predicate);
+                return query.OrderByDescending(orderByDESC);
             }
 
-            if (selector is not null)
+            return query;
+        }
+
+        private static IQueryable<T> ApplyPagination(IQueryable<T> query, int offset, int limit)
+        {
+            if (offset > 0)
             {
-                query = query.Select(selector);
+                query = query.Skip(offset);
             }
 
-            return query.AsNoTracking();
+            if (limit > 0)
+            {
+                query = query.Take(limit);
+            }
+
+            return query;
+        }
+
+        static private IQueryable<T> ApplyTracking(IQueryable<T> query, bool asNoTracking)
+        {
+            return asNoTracking ? query.AsNoTracking() : query;
+        }
+
+        private static IQueryable<T> ApplyQueryOptions(IQueryable<T> query, QueryOptions<T> queryOptions)
+        {
+            query = ApplyTracking(query, queryOptions.AsNoTracking);
+            query = ApplyInclude(query, queryOptions.Include);
+            query = ApplyFilter(query, queryOptions.Filter);
+            query = ApplyOrdering(query, queryOptions.OrderByASC, queryOptions.OrderByDESC);
+            query = ApplyPagination(query, queryOptions.Offset, queryOptions.Limit);
+
+            return query;
         }
     }
 }

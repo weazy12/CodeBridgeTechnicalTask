@@ -4,8 +4,7 @@ namespace TechnicalTask.DAL.Repositories.Interfaces.Base
 {
     public interface IRepositoryWrapper 
     {
-        public IDogRepository Dog { get; }
-        public int SaveChanges();
+        public IDogRepository DogRepository { get; }
 
         public Task<int> SaveChangesAsync();
 

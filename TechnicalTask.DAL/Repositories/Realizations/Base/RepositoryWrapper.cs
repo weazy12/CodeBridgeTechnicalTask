@@ -19,7 +19,7 @@ namespace TechnicalTask.DAL.Repositories.Realizations.Base
             _dbContext = context;
         }
 
-        public IDogRepository Dog
+        public IDogRepository DogRepository
         {
             get 
             {
@@ -29,11 +29,6 @@ namespace TechnicalTask.DAL.Repositories.Realizations.Base
                 }
                 return new DogRepository(_dbContext);
             }   
-        }
-
-        public int SaveChanges()
-        {
-            return _dbContext.SaveChanges();
         }
 
         public async Task<int> SaveChangesAsync()
