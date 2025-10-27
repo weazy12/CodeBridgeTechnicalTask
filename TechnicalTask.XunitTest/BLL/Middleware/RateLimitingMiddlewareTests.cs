@@ -86,7 +86,7 @@ namespace TechnicalTask.XunitTest.BLL.Middleware
             // Assert
             Assert.True(nextCalled);
         }
-        private HttpContext CreateHttpContext(string ipAddress)
+        private HttpContext CreateHttpContext(string? ipAddress)
         {
             var context = new DefaultHttpContext();
 

@@ -4,9 +4,7 @@ using Moq;
 using TechnicalTask.BLL.DTOs.Dog;
 using TechnicalTask.BLL.Interfaces.Logging;
 using TechnicalTask.BLL.Mediatr.Dog.Create;
-using TechnicalTask.BLL.Services.Logging;
 using TechnicalTask.DAL.Repositories.Interfaces.Base;
-using TechnicalTask.DAL.Repositories.Realizations.Base;
 
 namespace TechnicalTask.XunitTest.BLL.Mediatr.Dog
 {

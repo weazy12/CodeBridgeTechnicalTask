@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TechnicalTask.BLL.Extentions
+﻿namespace TechnicalTask.BLL.Extentions
 {
     public static class ResourcesExtentions
     {

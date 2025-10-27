@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Moq;
 using TechnicalTask.BLL.DTOs.Dog;
 using TechnicalTask.BLL.Interfaces.Logging;
 using TechnicalTask.BLL.Mediatr.Dog.GetAll;
 using TechnicalTask.DAL.Repositories.Interfaces.Base;
-using TechnicalTask.DAL.Repositories.Interfaces.Dog;
 using TechnicalTask.DAL.Repositories.QueryOptions;
 
 namespace TechnicalTask.XunitTest.BLL.Mediatr.Dog

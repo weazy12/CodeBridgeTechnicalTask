@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TechnicalTask.DAL.Data;
+﻿using TechnicalTask.DAL.Data;
 using TechnicalTask.DAL.Repositories.Interfaces.Base;
 using TechnicalTask.DAL.Repositories.Interfaces.Dog;
 using TechnicalTask.DAL.Repositories.Realizations.Dog;

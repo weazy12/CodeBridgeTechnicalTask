@@ -7,7 +7,7 @@ namespace TechnicalTask.BLL.Mapping.Dog
     {
         public DogProfile()
         {
-            CreateMap<DAL.Entities.Dog, DogDto>().ReverseMap();
+            CreateMap<DAL.Entities.Dog, DogDto>();
             CreateMap<CreateDogDto, DAL.Entities.Dog>();
         }
     }

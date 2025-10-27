@@ -22,7 +22,6 @@ namespace TechnicalTask.DAL.Data.EntityTypeConfigurations
                    .HasMaxLength(100);
 
             entity.Property(d => d.TailLength)
-                   .HasColumnName("tail_length")
                    .IsRequired();
 
             entity.Property(d => d.Weight)

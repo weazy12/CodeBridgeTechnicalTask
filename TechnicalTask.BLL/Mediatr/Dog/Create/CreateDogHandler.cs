@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using TechnicalTask.BLL.DTOs.Dog;
@@ -12,7 +7,6 @@ using TechnicalTask.BLL.Interfaces.Logging;
 using TechnicalTask.BLL.Resources;
 using TechnicalTask.DAL.Repositories.Interfaces.Base;
 using TechnicalTask.DAL.Repositories.QueryOptions;
-using TechnicalTask.DAL.Repositories.Realizations.Base;
 
 namespace TechnicalTask.BLL.Mediatr.Dog.Create
 {
