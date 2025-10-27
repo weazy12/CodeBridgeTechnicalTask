@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechnicalTask.DAL.Data;
 
@@ -10,9 +11,11 @@ using TechnicalTask.DAL.Data;
 namespace TechnicalTask.DAL.Migrations
 {
     [DbContext(typeof(TechnicalTaskDbContext))]
-    partial class TechnicalTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027224205_Fix column names")]
+    partial class Fixcolumnnames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace TechnicalTask.DAL.Migrations
 
                     b.Property<int>("TailLength")
                         .HasColumnType("int")
-                        .HasColumnName("tail_length");
+                        .HasColumnName("tail_lenght");
 
                     b.Property<int>("Weight")
                         .HasColumnType("int")
