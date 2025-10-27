@@ -20,7 +20,6 @@ builder.Host.UseSerilog((ctx, lc) =>
 
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -34,7 +33,6 @@ builder.Services.AddMediatR(cfg =>
 });
 
 builder.Services.AddValidatorsFromAssemblyContaining<BLLAsemblyMarker>();
-
 builder.Services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 builder.Services.AddScoped<ILoggerService, LoggerService>();
 
@@ -47,7 +45,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(5));
+app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromSeconds(1));
 
 app.UseHttpsRedirection();
 

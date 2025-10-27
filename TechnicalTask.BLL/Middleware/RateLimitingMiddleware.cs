@@ -1,4 +1,4 @@
-﻿    using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
 
 namespace TechnicalTask.BLL.Middleware
@@ -22,7 +22,9 @@ namespace TechnicalTask.BLL.Middleware
             var key = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var now = DateTime.UtcNow;
 
-            var entry = _requests.GetOrAdd(key, _ => (0, now));
+            var entry = _requests.GetOrAdd(key, k => {
+                return (0, now);
+            });
 
             if ((now - entry.Timestamp) > _period)
             {
